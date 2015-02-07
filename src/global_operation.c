@@ -11,10 +11,10 @@
 /* =================================================================== */
 /*                Definitions for static variables                     */
 /* =================================================================== */
-static struct thread_cache *thread_slab = NULL;
-static struct thread_cache *free_thread = NULL;
-static struct central_cache *used_central = NULL;
-static struct central_cache *free_central = NULL;
+static struct ThreadCache *thread_slab = NULL;
+static struct ThreadCache *free_thread = NULL;
+static struct CentralCache *used_central = NULL;
+static struct CentralCache *free_central = NULL;
 static pthread_key_t tkey;
 static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 static pthread_once_t once = PTHREAD_ONCE_INIT;
@@ -23,11 +23,11 @@ static pthread_once_t once = PTHREAD_ONCE_INIT;
 /* =================================================================== */
 /*                Declaration for static functions                     */
 /* =================================================================== */
-static void central_init(struct central_cache *cc);
+static void central_init(CentralCache *cc);
 static void *get_align_brk(void);
 static void global_add_central (void);
 static void thread_destructor (void *ptr);
-static struct thread_cache *thread_init (void);
+static ThreadCache *thread_init (void);
 static void init_once(void);
 static void func_before_main(void)  __attribute__((constructor));
 
@@ -35,9 +35,9 @@ static void func_before_main(void)  __attribute__((constructor));
 /* =================================================================== */
 /*                Definitions for global operations                    */
 /* =================================================================== */
-struct thread_cache *get_current_thread(void) {
+ThreadCache *get_current_thread(void) {
 	pthread_once(&once, init_once);
-	struct thread_cache *tc = pthread_getspecific(tkey);
+	ThreadCache *tc = pthread_getspecific(tkey);
         
 	if (tc == NULL)
 		tc = thread_init();
@@ -45,8 +45,8 @@ struct thread_cache *get_current_thread(void) {
 	return tc;
 }
 
-void thread_add_central(struct thread_cache *tc) {
-	struct central_cache *new_cc = NULL;
+void thread_add_central(ThreadCache *tc) {
+	CentralCache *new_cc = NULL;
 
 	pthread_mutex_lock(&mutex);     // Lock
         
@@ -70,8 +70,8 @@ void thread_add_central(struct thread_cache *tc) {
 	tc->cc = new_cc;
 }
 
-struct central_cache *find_central_of_pointer(void *ptr) {
-	struct central_cache *cc = used_central;
+CentralCache *find_central_of_pointer(void *ptr) {
+	CentralCache *cc = used_central;
 
 	// Check if pointer is in heap
 	if ((void*)ptr > sbrk(0))
@@ -101,7 +101,7 @@ struct central_cache *find_central_of_pointer(void *ptr) {
 /* =================================================================== */
 
 /* Initialize a central cache when get it from system */
-static void central_init(struct central_cache *cc) {
+static void central_init(CentralCache *cc) {
 	pthread_mutex_init(&cc->central_mutex, NULL);
 	cc->used_next = NULL;
 	cc->wait_free_chunk = NULL;
@@ -124,7 +124,7 @@ static void *get_align_brk(void) {
 
 static void global_add_central(void) {
 	int index;
-	struct central_cache *cc = NULL;
+	CentralCache *cc = NULL;
 
 	/* Initialize first central cahce */
 	free_central = get_align_brk();
@@ -141,10 +141,10 @@ static void global_add_central(void) {
 }
 
 static void thread_destructor(void *ptr) {
-	struct thread_cache *tc = ptr;
-	struct central_cache *cc = tc->cc;
-	struct central_cache *used_cc = NULL;
-	struct central_cache *next_cc = NULL;
+	ThreadCache *tc = ptr;
+	CentralCache *cc = tc->cc;
+	CentralCache *used_cc = NULL;
+	CentralCache *next_cc = NULL;
 
 	pthread_mutex_lock(&mutex);     // Lock
 	while (cc != NULL) {
@@ -176,9 +176,9 @@ static void thread_destructor(void *ptr) {
 	pthread_mutex_unlock(&mutex);   // Unlock
 }
 
-static struct thread_cache *thread_init(void) {
-	struct central_cache *cc = NULL;
-	struct thread_cache *tc  = NULL;
+static ThreadCache *thread_init(void) {
+	CentralCache *cc = NULL;
+	ThreadCache *tc  = NULL;
 
 	pthread_mutex_lock(&mutex);     // Lock
         

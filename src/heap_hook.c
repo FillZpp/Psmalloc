@@ -23,9 +23,9 @@ static uint16_t check_size(size_t size, uint16_t *kind) {
 }
 
 static void *
-get_appoint_chunk(struct central_cache *cc, size_t tar_size, void *ptr) {
-	struct chunk_head *ch = cc->free_chunk;
-	struct chunk_head *prev_ch = ch;
+get_appoint_chunk(CentralCache *cc, size_t tar_size, void *ptr) {
+	ChunkHead *ch = cc->free_chunk;
+	ChunkHead *prev_ch = ch;
 
 	/* Search in free chunk */
 	for(; ch!=NULL; prev_ch=ch, ch=ch->next) {
@@ -56,11 +56,11 @@ get_appoint_chunk(struct central_cache *cc, size_t tar_size, void *ptr) {
 }
 
 static void *
-get_suitable_chunk(struct thread_cache *tc, uint16_t kind, uint16_t num,
-                   size_t align, struct chunk_head *old_ch) {
-	struct chunk_head *ch = NULL;
-	struct chunk_head *prev_ch = NULL;
-	struct central_cache *cc = NULL;
+get_suitable_chunk(ThreadCache *tc, uint16_t kind, uint16_t num,
+                   size_t align, ChunkHead *old_ch) {
+	ChunkHead *ch = NULL;
+	ChunkHead *prev_ch = NULL;
+	CentralCache *cc = NULL;
 	size_t tar_size = chunk_size[kind] * num;
 	int index;
 	size_t ali_num;
@@ -170,9 +170,9 @@ get_suitable_chunk(struct thread_cache *tc, uint16_t kind, uint16_t num,
 	return ch;
 }
 
-void do_chunk_free(struct central_cache *cc, struct chunk_head *ch) {
-	struct chunk_head *prev_ch = NULL;
-	struct chunk_head *next_ch = NULL;
+void do_chunk_free(CentralCache *cc, ChunkHead *ch) {
+	ChunkHead *prev_ch = NULL;
+	ChunkHead *next_ch = NULL;
 	size_t check;
 
 	pthread_mutex_lock(&cc->central_mutex);                  // Lock
@@ -233,8 +233,8 @@ void do_chunk_free(struct central_cache *cc, struct chunk_head *ch) {
 }
 
 void *chunk_alloc_hook(size_t size, size_t align) {
-	struct chunk_head *ch = NULL;
-	struct thread_cache *tc = get_current_thread();
+	ChunkHead *ch = NULL;
+	ThreadCache *tc = get_current_thread();
 	uint16_t kind;
 	uint16_t num = check_size(size, &kind);
 
@@ -246,9 +246,9 @@ void *chunk_alloc_hook(size_t size, size_t align) {
 
 void *chunk_realloc_hook(void *ptr, size_t size) {
 	void *ret = NULL;
-	struct chunk_head *old_ch = ptr - chunk_head_size;
-	struct chunk_head *new_ch = NULL;
-	struct thread_cache *tc = get_current_thread();
+	ChunkHead *old_ch = ptr - chunk_head_size;
+	ChunkHead *new_ch = NULL;
+	ThreadCache *tc = get_current_thread();
 	uint16_t kind;
 	uint16_t num = check_size(size, &kind);
         

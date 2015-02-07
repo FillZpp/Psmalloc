@@ -30,7 +30,7 @@ static void *do_malloc (size_t size, size_t align) {
 }
 
 static void do_free (void *ptr) {
-	struct central_cache *cc = NULL;
+	CentralCache *cc = NULL;
 
 	/* Check pointer */
 	if (ptr == NULL)

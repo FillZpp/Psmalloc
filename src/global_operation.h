@@ -11,13 +11,13 @@
 
 
 /* Add a central cache for a thread */
-void thread_add_central (struct thread_cache *tc);
+void thread_add_central(ThreadCache *tc);
 
 /* Return current thread */
-struct thread_cache *get_current_thread (void);
+ThreadCache *get_current_thread(void);
 
 /* Find out which central is a pointer in */
-struct central_cache *find_central_of_pointer (void *ptr);
+CentralCache *find_central_of_pointer(void *ptr);
 
 
 #endif

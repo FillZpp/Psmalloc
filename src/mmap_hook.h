@@ -11,11 +11,11 @@
 #include "crconfig.h"
 
 
-void *mmap_alloc_hook (size_t size);
+void *mmap_alloc_hook(size_t size);
 
-void *mmap_realloc_hook (void *ptr, size_t size);
+void *mmap_realloc_hook(void *ptr, size_t size);
 
-void do_mmap_free (struct chunk_head *old_mm);
+void do_mmap_free(ChunkHead *old_mm);
 
 
 #endif

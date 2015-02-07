@@ -13,7 +13,7 @@
 
 
 void *mmap_alloc_hook (size_t size) {
-	struct chunk_head *mm = NULL;
+	ChunkHead *mm = NULL;
 
 	/* Get mmap */
 	mm = mmap(NULL, size + chunk_head_size, PROT_READ | PROT_WRITE,
@@ -24,9 +24,9 @@ void *mmap_alloc_hook (size_t size) {
 }
 
 void *mmap_realloc_hook (void *ptr, size_t size) {
-	struct chunk_head *new_mm = NULL;
+	ChunkHead *new_mm = NULL;
 	// It could be in mmap or central
-	struct chunk_head *old_mm = ptr - chunk_head_size;
+	ChunkHead *old_mm = ptr - chunk_head_size;
 
 	if (old_mm->seek >= size)
 		return ptr;
@@ -44,6 +44,6 @@ void *mmap_realloc_hook (void *ptr, size_t size) {
 	return new_mm + 1;
 }
 
-void do_mmap_free (struct chunk_head *old_mm) {
+void do_mmap_free (ChunkHead *old_mm) {
 	munmap(old_mm, old_mm->seek + chunk_head_size);
 }
