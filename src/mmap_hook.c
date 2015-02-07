@@ -36,7 +36,7 @@ void *mmap_realloc_hook (void *ptr, size_t size) {
 	memcpy(new_mm + 1, ptr, old_mm->seek);
         
 	// Release old
-	if ((int)old_mm > sbrk(0))    // Old pointer is in mmap
+	if ((void*)old_mm > sbrk(0))    // Old pointer is in mmap
 		do_mmap_free(old_mm);
 	else                     // Old pointer is in heap
 		do_chunk_free(find_central_of_pointer(old_mm), old_mm);

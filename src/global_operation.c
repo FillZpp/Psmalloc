@@ -74,7 +74,7 @@ struct central_cache *find_central_of_pointer(void *ptr) {
 	struct central_cache *cc = used_central;
 
 	// Check if pointer is in heap
-	if ((int)ptr > sbrk(0))
+	if ((void*)ptr > sbrk(0))
 		return NULL;
         
 	while (cc != NULL) {
@@ -111,9 +111,9 @@ static void central_init(struct central_cache *cc) {
 }
 
 static void *get_align_brk(void) {
-	int page_size = getpagesize();
-	int current_brk = sbrk(0);
-	int remainder = current_brk % page_size;
+	size_t page_size = getpagesize();
+	size_t current_brk = (size_t)sbrk(0);
+	size_t remainder = current_brk % page_size;
 
 	/* Check if current brk aligns with page size */
 	if (remainder != 0)
