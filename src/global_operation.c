@@ -25,9 +25,9 @@ static pthread_once_t once = PTHREAD_ONCE_INIT;
 /* =================================================================== */
 static void central_init(CentralCache *cc);
 static void *get_align_brk(void);
-static void global_add_central (void);
-static void thread_destructor (void *ptr);
-static ThreadCache *thread_init (void);
+static void global_add_central(void);
+static void thread_destructor(void *ptr);
+static ThreadCache *thread_init(void);
 static void init_once(void);
 static void func_before_main(void)  __attribute__((constructor));
 

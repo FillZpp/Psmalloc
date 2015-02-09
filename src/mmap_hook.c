@@ -12,7 +12,7 @@
 #include "heap_hook.h"
 
 
-void *mmap_alloc_hook (size_t size) {
+void *mmap_alloc_hook(size_t size) {
 	ChunkHead *mm = NULL;
 
 	/* Get mmap */
@@ -23,7 +23,7 @@ void *mmap_alloc_hook (size_t size) {
 	return mm + 1;
 }
 
-void *mmap_realloc_hook (void *ptr, size_t size) {
+void *mmap_realloc_hook(void *ptr, size_t size) {
 	ChunkHead *new_mm = NULL;
 	// It could be in mmap or central
 	ChunkHead *old_mm = ptr - chunk_head_size;
@@ -44,6 +44,6 @@ void *mmap_realloc_hook (void *ptr, size_t size) {
 	return new_mm + 1;
 }
 
-void do_mmap_free (ChunkHead *old_mm) {
+void do_mmap_free(ChunkHead *old_mm) {
 	munmap(old_mm, old_mm->seek + chunk_head_size);
 }
