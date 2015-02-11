@@ -7,7 +7,7 @@ OBJ = $(patsubst %.c, %.o, $(notdir $(SRC)))
 TEST = ./test/test.c
 
 SYS_LIB_DIR = /usr/lib
-CC = gcc
+CC = clang
 LD = ld
 CFLAGS = -g -Wall -O2
 TARGET = libpsmalloc.so
